@@ -113,6 +113,11 @@ namespace ExamApp.Controllers
         [HttpPost()]
         public async Task<ActionResult> PostImportXml(OrdersDto ordersDto)
         {
+            var idList = ordersDto.Orders.Select(o => o.OxId).ToArray();
+
+            if(await _context.Orders.AnyAsync(o => idList.Contains(o.OxId)))
+                return Conflict();
+
             var orders = ordersDto.Orders.Select(dto =>
             {
                 var order = _mapper.Map<Order>(dto);
